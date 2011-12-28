@@ -9,6 +9,15 @@ var express = require('express')
 var mongoose = require('mongoose')
     , Schema = mongoose.Schema;
 
+// print process.argv
+process.argv.forEach(function (val, index, array) {
+    console.log(index + ': ' + val);
+    if (val.indexOf('mongodbsrc=') != -1) {
+        val = val.replace('mongodbsrc=', '');
+        mongoose.connect(val);
+    }
+});
+
 var app = module.exports = express.createServer();
 
 // Configuration
