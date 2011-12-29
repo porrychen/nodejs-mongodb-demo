@@ -21,8 +21,8 @@ process.argv.forEach(function (val, index, array) {
 });
 
 var TestSchema = new Schema({
-    name        : {type : String}
-    ,age       : {type : String}
+    name  : {type : String},
+    age   : {type : String}
 });
 
 var coll_name = 'user';//表名
