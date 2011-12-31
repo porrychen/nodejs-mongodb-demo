@@ -17,8 +17,8 @@ process.argv.forEach(function (val, index, array) {
     }
 });
 
-var mongorouters = mongoose.routes();
-var mongopages = mongoose.pages();
+var mongorouters = mongoose.routes;
+var mongopages = mongoose.pages;
 
 var app = module.exports = express.createServer();
 
@@ -57,6 +57,7 @@ var startRouter = function(path) {
     });
 };
 
+console.log(mongorouters);
 for(route in mongorouters){//如果直接for循环而不是调用函数，你就会发现route永远是最后一个
     console.log(route);
 //    startRouter(route);

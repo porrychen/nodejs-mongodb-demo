@@ -64,10 +64,13 @@ exports.connect = function(url){
     mongoose.connect(url);
 
     console.log(String(url) + ' connect success !');
+
+    getRoutes();
+    getPages();
 };
 
-exports.routes = function(){
-    var result = {};
+var routes = {};
+getRoutes = function(){
     // 删除
 //    Routes.remove({page : 'index'}, function(error){
 //        console.log(error + ' route test!');
@@ -77,26 +80,27 @@ exports.routes = function(){
 //    createRoute();
 
     // 查找
-    Routes.find({}, function(error, routes){
+    Routes.find({}, function(error, rs){
         if (!error) {
-            routes.forEach(function(route){
-                console.log(route);
-                result[route.template] = route;
+            rs.forEach(function(r){
+                console.log(r);
+                routes[r.template] = r;
             });
         }
+        console.log(routes);
     });
-
-    return result;
 };
 
-exports.pages = function(){
+exports.routes = routes;
+
+getPages = function(){
     // 删除
-    Pages.remove({name : 'index'}, function(error){
-        console.log(error + ' page test !');
-    });
+//    Pages.remove({name : 'index'}, function(error){
+//        console.log(error + ' page test !');
+//    });
 
     // 添加
-    createPage();
+//    createPage();
 
     // 查找
     Pages.find({}, function(error, pages){
@@ -107,6 +111,8 @@ exports.pages = function(){
 //        }
     });
 };
+
+exports.pages = {};
 
 exports.close = function(){
     mongoose.connection.close();
