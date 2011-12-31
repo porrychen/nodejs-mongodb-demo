@@ -6,8 +6,7 @@
 var express = require('express')
   , routes = require('./routes');
 
-var mongoose = require('mongoose')
-    , Schema = mongoose.Schema;
+var mongoose = require('./mongos');
 
 // print process.argv
 process.argv.forEach(function (val, index, array) {
@@ -15,51 +14,11 @@ process.argv.forEach(function (val, index, array) {
     if (val.indexOf('mongodbsrc=') != -1) {
         val = val.replace('mongodbsrc=', '');
         mongoose.connect(String(val));
-
-        console.log(String(val) + ' connect success !');
     }
 });
 
-var TestSchema = new Schema({
-    name  : {type : String},
-    age   : {type : String}
-});
-
-var coll_name = 'user';//表名
-
-var USER  = mongoose.model(coll_name, TestSchema);
-
-// 修改
-USER.find({ name: 'genedna'},function(err, users) {
-    if (!err) {
-        users.forEach(function(user){
-            user.age = '2008';
-            user.save();
-        });
-    }
-});
-
-// 查询
-USER.find({name:/^cbl/},function(err, users) {
-    if (!err) {
-        users.forEach(function(user){
-            console.log(user);
-        });
-
-        var user  = new USER();
-        user.name = 'cbl' + users.length;
-        user.age = '2000';
-        //指定插入
-        user.save(function(err) {
-            if (err) {
-                console.log(err);
-                console.log('save failed');
-            } else {
-                console.log('save success');
-            }
-        });
-    }
-});
+var mongorouters = mongoose.routes();
+var mongopages = mongoose.pages();
 
 var app = module.exports = express.createServer();
 
@@ -87,7 +46,23 @@ app.configure('production', function(){
 
 // Routes
 
-app.get('/', routes.index);
+var startRouter = function(path) {
+    app.get(route, function(req,res){
+        console.log("Connect to "+path);
+        for (page in mongopages) {
+            if (page.name == path.page) {
+                res.render(path.template, page);//最核心的一句
+            }
+        }
+    });
+};
+
+for(route in mongorouters){//如果直接for循环而不是调用函数，你就会发现route永远是最后一个
+    console.log(route);
+//    startRouter(route);
+}
+
+//app.get('/', routes.index);
 
 app.listen(4000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
