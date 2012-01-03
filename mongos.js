@@ -15,6 +15,7 @@ var PagesSchema = new Schema({
 });
 
 var RoutesSchema = new Schema({
+    route: {type: String},
     template: {type: String},
     page: {type: String}
 });
@@ -46,6 +47,7 @@ var Routes = mongoose.model('routes', RoutesSchema);
 
 createRoute = function(){
     var route  = new Routes();
+    route.route = '/';
     route.template = 'index';
     route.page = 'index';
     //指定插入
@@ -64,36 +66,29 @@ exports.connect = function(url){
     mongoose.connect(url);
 
     console.log(String(url) + ' connect success !');
-
-    getRoutes();
-    getPages();
 };
 
-var routes = {};
-getRoutes = function(){
+exports.routes  = function(callback){
     // 删除
-//    Routes.remove({page : 'index'}, function(error){
-//        console.log(error + ' route test!');
-//    });
+    Routes.remove({page : 'index'}, function(error){
+        console.log(error + ' route test!');
+    });
 
     // 添加
-//    createRoute();
+    createRoute();
 
     // 查找
     Routes.find({}, function(error, rs){
         if (!error) {
-            rs.forEach(function(r){
-                console.log(r);
-                routes[r.template] = r;
-            });
+            callback(null, rs);
+        } else {
+            callback(error);
         }
-        console.log(routes);
+        console.log(rs);
     });
 };
 
-exports.routes = routes;
-
-getPages = function(){
+exports.pages = function(callback){
     // 删除
 //    Pages.remove({name : 'index'}, function(error){
 //        console.log(error + ' page test !');
@@ -104,15 +99,13 @@ getPages = function(){
 
     // 查找
     Pages.find({}, function(error, pages){
-//        if (!error) {
-//            return pages;
-//        } else {
-//            return null;
-//        }
+        if (!error) {
+            callback(null, pages);
+        } else {
+            callback(error);
+        }
     });
 };
-
-exports.pages = {};
 
 exports.close = function(){
     mongoose.connection.close();

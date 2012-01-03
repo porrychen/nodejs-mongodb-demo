@@ -17,9 +17,6 @@ process.argv.forEach(function (val, index, array) {
     }
 });
 
-var mongorouters = mongoose.routes;
-var mongopages = mongoose.pages;
-
 var app = module.exports = express.createServer();
 
 // Configuration
@@ -46,22 +43,34 @@ app.configure('production', function(){
 
 // Routes
 
-var startRouter = function(path) {
-    app.get(route, function(req,res){
-        console.log("Connect to "+path);
-        for (page in mongopages) {
+var startRouter = function(path, pages) {
+    app.get(path.route, function(req,res){
+        console.log("Connect to "+path.route);
+        pages.forEach(function(page) {
             if (page.name == path.page) {
                 res.render(path.template, page);//最核心的一句
             }
-        }
+        });
     });
 };
 
-console.log(mongorouters);
-for(route in mongorouters){//如果直接for循环而不是调用函数，你就会发现route永远是最后一个
-    console.log(route);
-//    startRouter(route);
-}
+mongoose.pages(function(error, ps){
+    if (!error) {
+        mongoose.routes(function(error, rs){
+            // rs 返回数据库的信息
+            if (!error) {
+                rs.forEach(function(r){
+                    startRouter(r, ps);
+                });
+            }
+        });
+    }
+});
+
+//for(route in mongorouters){//如果直接for循环而不是调用函数，你就会发现route永远是最后一个
+//    console.log(route);
+////    startRouter(route);
+//}
 
 //app.get('/', routes.index);
 
