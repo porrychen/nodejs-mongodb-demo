@@ -16,6 +16,7 @@ var PagesSchema = new Schema({
 
 var RoutesSchema = new Schema({
     route: {type: String},
+    type: {type: String},
     template: {type: String},
     page: {type: String}
 });
@@ -27,35 +28,36 @@ var UploadsSchema = new Schema({
 
 var Pages = mongoose.model('pages', PagesSchema);
 
-createPage = function(){
+createPage = function(name, title, tags){
     var page  = new Pages();
 
-    page.name = 'index';
-    page.title = 'One Page';
-    page.tags = 'only,ok';
+    page.name = name;
+    page.title = title;
+    page.tags = tags;
     //指定插入
     page.save(function(error) {
         if (error) {
             console.log('save failed' + error);
         } else {
-            console.log('save success');
+            console.log(name + ' page save success');
         }
     });
 };
 
 var Routes = mongoose.model('routes', RoutesSchema);
 
-createRoute = function(){
+createRoute = function(r, type, template, p){
     var route  = new Routes();
-    route.route = '/';
-    route.template = 'index';
-    route.page = 'index';
+    route.route = r;
+    route.type = type;
+    route.template = template;
+    route.page = p;
     //指定插入
     route.save(function(error) {
         if (error) {
             console.log('save failed' + error);
         } else {
-            console.log('save success');
+            console.log(r + ' path save success');
         }
     });
 };
@@ -70,12 +72,13 @@ exports.connect = function(url){
 
 exports.routes  = function(callback){
     // 删除
-    Routes.remove({page : 'index'}, function(error){
-        console.log(error + ' route test!');
+    Routes.remove({}, function(error){
+        if (error) console.log(error + ' route test!');
     });
 
     // 添加
-    createRoute();
+    createRoute('/', 'get', 'index', 'index');
+    createRoute('/upload', 'post', 'upload', 'upload');
 
     // 查找
     Routes.find({}, function(error, rs){
@@ -90,12 +93,13 @@ exports.routes  = function(callback){
 
 exports.pages = function(callback){
     // 删除
-//    Pages.remove({name : 'index'}, function(error){
-//        console.log(error + ' page test !');
-//    });
+    Pages.remove({}, function(error){
+        if (error) console.log(error + ' page test !');
+    });
 
     // 添加
-//    createPage();
+    createPage('index', 'One Page', 'only,ok');
+    createPage('upload', 'Upload Page', 'yes,upload');
 
     // 查找
     Pages.find({}, function(error, pages){

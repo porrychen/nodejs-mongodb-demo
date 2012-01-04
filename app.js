@@ -6,7 +6,10 @@
 var express = require('express')
   , routes = require('./routes');
 
-var mongoose = require('./mongos');
+var mongoose = require('./mongos'),
+    formidable = require('formidable'),
+    fs = require('fs'),
+    util = require('util');
 
 // print process.argv
 process.argv.forEach(function (val, index, array) {
@@ -44,14 +47,67 @@ app.configure('production', function(){
 // Routes
 
 var startRouter = function(path, pages) {
-    app.get(path.route, function(req,res){
-        console.log("Connect to "+path.route);
-        pages.forEach(function(page) {
-            if (page.name == path.page) {
-                res.render(path.template, page);//最核心的一句
-            }
+    if (path.type == 'get') {
+        app.get(path.route, function(req,res){
+            console.log("app get "+path.route);
+            pages.forEach(function(page) {
+                if (page.name == path.page) {
+                    res.render(path.template, page);//最核心的一句
+                }
+            });
         });
-    });
+    } else {
+        app.post(path.route, function(req,res){
+            console.log("app post "+path.route + util.inspect(req));
+            pages.forEach(function(page) {
+                if (page.name == path.page) {
+                    if (path.route == '/upload') {
+                        var form = new formidable.IncomingForm(),
+                            files = [],
+                            fields = [];
+
+                        form.uploadDir = './data';
+
+                        form
+                            .on('field', function(field, value) {
+                            console.log(field, value);
+                            fields.push([field, value]);
+                        })
+                            .on('file', function(field, file) {
+                                console.log(field, file);
+                                files.push([field, file]);
+                            })
+                            .on('end', function() {
+                                console.log('-> upload done');
+//                                res.writeHead(200, {'content-type': 'text/plain'});
+//                                res.write('received fields:\n\n '+util.inspect(fields));
+//                                res.write('\n\n');
+//                                res.end('received files:\n\n '+util.inspect(files));
+                            });
+                        form.parse(req);
+
+                        res.render(path.template, page);
+
+//                        form.parse(req, function(error, fields, files) {
+//                            var path     = files['file']['path'],
+//                                filename = files['file']['filename'],
+//                                mime     = files['file']['mime'];
+//                            console.log('upload file : ' + path);
+//                            fs.renameSync(files.upload.path, 'test.gif');
+//
+////                            page.imgsrc = filename;
+//
+//                            res.render(path.template, page);
+//                        });
+                    } else {
+                        console.log('not upload file')
+                        res.render(path.template, page);
+                    }
+                }
+            });
+        });
+    }
+
 };
 
 mongoose.pages(function(error, ps){
@@ -67,12 +123,9 @@ mongoose.pages(function(error, ps){
     }
 });
 
-//for(route in mongorouters){//如果直接for循环而不是调用函数，你就会发现route永远是最后一个
-//    console.log(route);
-////    startRouter(route);
-//}
-
 //app.get('/', routes.index);
+
+//app.post('/upload', )
 
 app.listen(4000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
