@@ -1,7 +1,6 @@
 {
     "name": "use-MongoDB"
   , "version": "0.0.1"
-  , "private": true
   , "keywords": ["nodejs", "mongoose", "mongo", "query"]
   , "homepage": "https://github.com/porrychen/nodejs-mongodb-demo"
   , "dependencies": {
@@ -11,5 +10,6 @@
     , "mongoose": ">= 2.4.8"
     , "formidable": ">= 1.0.8"
     , "multipart": ">= 0.0.0"
+    , "connect-form": ">=0.2.1"
   }
 }
