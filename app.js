@@ -94,9 +94,9 @@ var startRouter = function(path, pages) {
                                 filename = files['upload']['filename'],
                                 mime     = files['upload']['mime'];
                             console.log('upload file : ' + filepath);
-                            fs.renameSync(filepath, './data/test.gif');
+                            fs.renameSync(filepath, './public/images/test.gif');
 
-                            page.imgsrc = './data/test.gif';
+                            page.imgsrc = '/images/test.gif';
 
                             res.headerSent;
                             console.log(page.imgsrc);
