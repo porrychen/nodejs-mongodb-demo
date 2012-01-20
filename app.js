@@ -8,15 +8,16 @@ var express = require('express')
 
 var mongoose = require('./mongos'),
     formidable = require('formidable'),
+    _ = require('underscore'),
     fs = require('fs'),
     util = require('util');
 
-// print process.argv
-process.argv.forEach(function (val, index, array) {
-    console.log(index + ': ' + val);
-    if (val.indexOf('mongodbsrc=') != -1) {
-        val = val.replace('mongodbsrc=', '');
-        mongoose.connect(String(val));
+_.str = require('underscore.string');
+
+_.each(process.argv, function(argv){
+    if(_.str.include(argv, 'mongodbsrc=')){
+      src = argv.split('=')[1];
+      mongoose.connect(src);
     }
 });
 

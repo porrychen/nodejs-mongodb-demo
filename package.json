@@ -4,10 +4,12 @@
   , "keywords": ["nodejs", "mongoose", "mongo", "query"]
   , "homepage": "https://github.com/porrychen/nodejs-mongodb-demo"
   , "dependencies": {
-      "express": ">= 2.5.5"
+      "express": ">= 2.5.6"
     , "sass": ">= 0.5.0"
     , "jade": ">= 0.20.0"
     , "mongoose": ">= 2.4.8"
     , "formidable": ">= 1.0.8"
+    , "underscore": ">= 1.3.0"
+    , "underscore.string": ">= 2.0.0"
   }
 }
